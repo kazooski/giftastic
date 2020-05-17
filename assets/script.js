@@ -37,18 +37,14 @@ function renderButtons() {
 };
 
 // On click functions for the .emote-button class
-function readyclick () {
+function gifManifest () {
     // On click functions for the .emote-button class 
     $(".emote-button").click(function(){
 
         $("#gifs-view").empty();
-        console.log("clicked");
+        console.log("clicked button");
         // Grabbing and storing the data-animal property value from the button
         var emote = $(this).attr("data-emote");
-
-        // Constructing a queryURL using the animal name
-        // var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-        //     animal + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
 
         var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=LNB5YcmfMFEH6uZ7xjFDxJALUmczzoOV&q=" +
             emote + "&limit=15&offset=0&rating=PG&lang=en";
@@ -63,9 +59,8 @@ function readyclick () {
         })
             // After data comes back from the request
             .then(function(response) {
-            console.log(queryURL);
-
-            console.log(response);
+            // console.log(queryURL);
+            // console.log(response);
             // storing the data from the AJAX request in the results variable
             var results = response.data;
 
@@ -78,10 +73,17 @@ function readyclick () {
                 var p = $("<p>").text("Rated: " + results[i].rating);
                 // Creating and storing an image tag
                 var emoteImage = $("<img>");
-                // Setting the src attribute of the image to a property pulled off the result item
-                emoteImage.attr("src", results[i].images.fixed_height.url);
-
-                emoteImage.attr("float", "left");
+                // Adding class for click interaction
+                emoteImage.addClass("gifImage");
+                // Adding src to default to still
+                emoteImage.attr("src", results[i].images.fixed_height_still.url);
+                // Adding and storing url for still image
+                emoteImage.attr("data-still", results[i].images.fixed_height_still.url);
+                // Adding and storing url for animate image
+                emoteImage.attr("data-animate", results[i].images.fixed_height.url);
+                // Setting attribute to still upon loading
+                emoteImage.attr("data-state", "still");
+                // emoteImage.attr("float", "left");
                 // Appending the paragraph and image tag to the animalDiv
                 emoteDiv.append(p);
                 emoteDiv.append(emoteImage);
@@ -90,10 +92,60 @@ function readyclick () {
                 $("#gifs-view").append(emoteDiv);
             }
         });
-    }); 
+    });
 };
+
+renderButtons();
+gifManifest();
+
+// function addNewButton() {
+$("#add-new-button").on("click",function() {
+    var userInput = $("#user-input").val();
+    console.log("addnewbutton");
+    console.log(userInput);
+    topics.push(userInput);
+    renderButtons();
+    gifManifest();
+})
+
+// };
+
+
+$("img").click(function() {
+    console.log("clicked");
+    // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+    var state = $(this).attr("data-state");
+    // If the clicked image's state is still, update its src attribute to what its data-animate value is.
+    // Then, set the image's data-state to animate
+    // Else set src to the data-still value
+    if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+    } else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+    }
+});
+
+
+// function gifStates () {
+    // $("#gifs-view").on("click", function() {
+    //     console.log("clicked");
+    //     // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+    //     var state = $(this).attr("data-state");
+    //     // If the clicked image's state is still, update its src attribute to what its data-animate value is.
+    //     // Then, set the image's data-state to animate
+    //     // Else set src to the data-still value
+    //     if (state === "still") {
+    //         $(this).attr("src", $(this).attr("data-animate"));
+    //         $(this).attr("data-state", "animate");
+    //     } else {
+    //         $(this).attr("src", $(this).attr("data-still"));
+    //         $(this).attr("data-state", "still");
+    //     }
+    // });
+// };
 
 
 // run. those. functions. 
-renderButtons();
-readyclick();
+// gifStates();
